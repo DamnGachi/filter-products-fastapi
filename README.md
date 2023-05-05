@@ -1,4 +1,4 @@
-# Change uri to db in database file
+# Change URL to db in database file
 ## Install Dependencies Powershell or cmd
 ```
 pip install -r requirements.txt
