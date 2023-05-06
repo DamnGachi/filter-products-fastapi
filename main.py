@@ -18,7 +18,6 @@ async def upload_data(data: UploadFile = File(...)):
     my_collection.insert_many(data_dict)
     return {"status": "Data uploaded successfully!"}
 
-
 @app.put('/filter')
 async def product_filter():
     update_sku(my_collection)

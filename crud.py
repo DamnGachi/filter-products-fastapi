@@ -4,6 +4,7 @@ from pymongo import UpdateOne
 
 
 def update_sku(my_collection):
+
     my_collection.update_many(
         {"category": {"$in": ["одежда", "обувь", "сумки"]}},
         [
@@ -23,6 +24,7 @@ def update_sku(my_collection):
 
         ]
     )
+
     return {"message": "Цены и артиклы на все товары успешно присвоены"}
 
 
@@ -40,6 +42,7 @@ def remove_color_from_category(my_collection):
             }
         }}]
     )
+    my_collection.update_many({}, {"$unset": {"fashion_season": 1}})
     return {"message": "Удалены все цвета из парфюмерии"}
 
 
@@ -52,20 +55,21 @@ def crud_update_brand(my_collection):
     }).limit(100)
 
     for product in products:
-        print(product)
-        name = product["brand"]
-        color_code, color_name = product["color"].split(
-            "/") if "/" in product["color"] else (product["color"], "")
-        sku = product["sku"]
+        if "slug" not in product["brand"]:
+            name = product["brand"]
+            color_code, color_name = product["color"].split("/") if "/" in product["color"] else (product["color"], "")
+            sku = product["sku"]
 
-        slug = slugify(f"{name} {color_code} {color_name} {sku}")
+            slug = slugify(f"{name} {color_code} {color_name} {sku}")
 
-        my_collection.update_one(
-            {"_id": product["_id"]},
-            {"$set": {"brand": {"name": name, "slug": slug, "color_name": color_name}}}
-        )
-
+            my_collection.update_one(
+                {"_id": product["_id"]},
+                {"$set": {"brand": {"name": name, "slug": slug, "color_name": color_name}}}
+            )
+        else:
+            continue
     return {"message": "Бренды успешно обновлены"}
+
 
 
 def set_data_price(my_collection):
