@@ -81,7 +81,7 @@ async def get_brands(brand: Union[str, None] = None):
 @app.get("/data_size")
 async def get_data_size(size: Union[str, None] = None):
     if size is not None:
-        query = {"leftovers": {"size": size}}
+        query = {"leftovers": {"$elemMatch": {"size": size}}}
     else:
         query = {}
     projection = {"_id": 0}
