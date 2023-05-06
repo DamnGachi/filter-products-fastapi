@@ -50,8 +50,8 @@ def crud_update_brand(my_collection):
     products = my_collection.find({
         "brand": {"$exists": True},
         "color": {"$exists": True},
-        "size_table_type": {"$ne": "Парфюмерия"},
-        "root_category": {"$ne": "Косметика"},
+        # "size_table_type": {"$ne": "Парфюмерия"},
+        # "root_category": {"$ne": "Косметика"},
     }).limit(100)
 
     for product in products:

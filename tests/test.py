@@ -1,3 +1,4 @@
+import pymongo
 import pytest
 from aiohttp import web
 from http.client import HTTPException
@@ -8,6 +9,14 @@ async def client(aiohttp_client):
     app = web.Application()
     client = await aiohttp_client(app)
     return client
+
+
+@pytest.fixture(scope="session")
+def mongo_client():
+    uri = "mongodb+srv://admin:admin@dastish.gf1hbe3.mongodb.net/?retryWrites=true&w=majority"
+    client = pymongo.MongoClient(uri)
+    yield client
+    client.close()
 
 
 def test_valid_data_price_request():
@@ -46,3 +55,11 @@ def test_data_price_response_fields():
 def test_data_price_exception():
     with pytest.raises(HTTPException):
         client.get("/data_price?min_price=5000&max_price=4000")
+
+
+def test_create_collection(mongo_client):
+    db = mongo_client.myDatabase
+    collection_name = "test_collection"
+    db.create_collection(collection_name)
+
+    assert collection_name in db.list_collection_names()
