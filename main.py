@@ -5,7 +5,10 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from crud import remove_color_from_category, crud_update_brand, update_categories, update_sku, set_data_price
 from database import my_collection
 
-app = FastAPI()
+app = FastAPI(contact=dict(
+    name="Developer Telegram",
+    url="https://t.me/Holucrap",
+    email="maijor18@mail.ru",))
 
 
 @app.post("/upload")
