@@ -42,7 +42,7 @@ def remove_color_from_category(my_collection):
             }
         }}]
     )
-    my_collection.update_many({}, {"$unset": {"fashion_season": 1}})
+    my_collection.update_many({}, {"$unset": {"fashion_season": 1,"fashion_collection": 1,"fashion_collection_inner": 1,"manufacture_country": 1}})
     return {"message": "Удалены все цвета из парфюмерии"}
 
 
@@ -57,15 +57,16 @@ def crud_update_brand(my_collection):
     for product in products:
         if "slug" not in product["brand"]:
             name = product["brand"]
-            color_code, color_name = product["color"].split("/") if "/" in product["color"] else (product["color"], "")
-            sku = product["sku"]
+            if product["color"]:
+                color_code, color_name = product["color"].split("/") if "/" in product["color"] else (product["color"], "")
+                sku = product["sku"]
 
-            slug = slugify(f"{name} {color_code} {color_name} {sku}")
+                slug = slugify(f"{name} {color_code} {color_name} {sku}")
 
-            my_collection.update_one(
-                {"_id": product["_id"]},
-                {"$set": {"brand": {"name": name, "slug": slug, "color_name": color_name}}}
-            )
+                my_collection.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"brand": {"name": name, "slug": slug, "color_name": color_name}}}
+                )
         else:
             continue
     return {"message": "Бренды успешно обновлены"}
