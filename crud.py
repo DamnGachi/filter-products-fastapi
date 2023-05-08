@@ -37,7 +37,7 @@ def remove_color_from_category(my_collection):
             "size_table_type": {"$exists": True},
 
          },
-        [{"$unset": {
+        [{"$set": {
             "color": {
                 "$regexFind": {
                     "input": "$color",
