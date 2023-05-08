@@ -34,9 +34,10 @@ def remove_color_from_category(my_collection):
     my_collection.update_many(
         {"size_table_type": {
             "$in": ["парфюм", "парфюмерия", "Парфюм", "Парфюмерия"]},
-            "size_table_type": {"$exists": True}
+            "size_table_type": {"$exists": True},
+
          },
-        [{"$set": {
+        [{"$unset": {
             "color": {
                 "$regexFind": {
                     "input": "$color",
@@ -44,7 +45,8 @@ def remove_color_from_category(my_collection):
                     "options": "i"
                 }
             }
-        }}]
+        }}],
+
     )
     my_collection.update_many({}, {"$unset": {"fashion_season": 1, "fashion_collection": 1,
                               "fashion_collection_inner": 1, "manufacture_country": 1, "size_table_type": 1, "category": 1}})
@@ -55,8 +57,6 @@ def crud_update_brand(my_collection):
     products = my_collection.find({
         "brand": {"$exists": True},
         "color": {"$exists": True},
-        # "size_table_type": {"$ne": "Парфюмерия"},
-        # "root_category": {"$ne": "Косметика"},
     }).limit(100)
 
     for product in products:
@@ -76,6 +76,26 @@ def crud_update_brand(my_collection):
         else:
             continue
     return {"message": "Бренды успешно обновлены"}
+
+
+def change_color_product(my_collection):
+    colors = my_collection.find(
+        {"root_category": {"$nin": ["Парфюмерия с маркировкой", "Косметика", "Аксессуары", "Парфюмерия без маркировки"]},
+         "color": {"$nin": ""},
+         "color": {"$exists": True}}).limit(100)
+    for product in colors:
+        if product["color"] is None:
+            continue
+        if "/" in product["color"]:
+            color = product["color"].split("/")
+            color_id = color[0]
+            color_name = color[1]
+            my_collection.update_one(
+                {"_id": product["_id"]},
+                {"$set": {"color_name": color_name, "color_id": color_id}}
+            )
+        print(product)
+    return {"message": "Цвета успешно обновлены"}
 
 
 def set_data_price(my_collection):

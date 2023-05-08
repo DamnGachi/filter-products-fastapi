@@ -1,7 +1,14 @@
 import json
 from typing import Union
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from crud import remove_color_from_category, crud_update_brand, update_categories, update_sku, set_data_price
+from crud import (
+    change_color_product,
+    remove_color_from_category,
+    crud_update_brand,
+    update_categories,
+    update_sku,
+    set_data_price
+)
 from database import my_collection
 
 app = FastAPI(contact=dict(
@@ -17,9 +24,11 @@ async def upload_data(data: UploadFile = File(...)):
     my_collection.insert_many(data_dict)
     return {"status": "Data uploaded successfully!"}
 
+
 @app.put('/filter')
 async def product_filter():
     update_sku(my_collection)
+    change_color_product(my_collection)
     remove_color_from_category(my_collection)
     update_categories(my_collection)
     crud_update_brand(my_collection)
