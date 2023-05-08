@@ -37,15 +37,9 @@ def remove_color_from_category(my_collection):
             "size_table_type": {"$exists": True},
 
          },
-        [{"$set": {
-            "color": {
-                "$regexFind": {
-                    "input": "$color",
-                    "regex": "/([^\s\/]+)$/",
-                    "options": "i"
-                }
-            }
-        }}],
+        {"un$set": {
+            "color": 1
+        }},
 
     )
     my_collection.update_many({}, {"$unset": {"fashion_season": 1, "fashion_collection": 1,
