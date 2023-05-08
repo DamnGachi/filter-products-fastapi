@@ -1,4 +1,3 @@
-from enum import Enum
 import json
 from typing import Union
 from fastapi import FastAPI, File, HTTPException, UploadFile

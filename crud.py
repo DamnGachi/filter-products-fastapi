@@ -6,7 +6,9 @@ from pymongo import UpdateOne
 def update_sku(my_collection):
 
     my_collection.update_many(
-        {"category": {"$in": ["одежда", "обувь", "сумки"]}},
+        {"category": {"$in": ["одежда", "обувь", "сумки"]},
+         "category": {"$exists": True}
+         },
         [
             {
                 "$set": {
@@ -31,7 +33,9 @@ def update_sku(my_collection):
 def remove_color_from_category(my_collection):
     my_collection.update_many(
         {"size_table_type": {
-            "$in": ["парфюм", "парфюмерия", "Парфюм", "Парфюмерия"]}},
+            "$in": ["парфюм", "парфюмерия", "Парфюм", "Парфюмерия"]},
+            "size_table_type": {"$exists": True}
+         },
         [{"$set": {
             "color": {
                 "$regexFind": {
@@ -42,7 +46,8 @@ def remove_color_from_category(my_collection):
             }
         }}]
     )
-    my_collection.update_many({}, {"$unset": {"fashion_season": 1,"fashion_collection": 1,"fashion_collection_inner": 1,"manufacture_country": 1}})
+    my_collection.update_many({}, {"$unset": {"fashion_season": 1, "fashion_collection": 1,
+                              "fashion_collection_inner": 1, "manufacture_country": 1, "size_table_type": 1, "category": 1}})
     return {"message": "Удалены все цвета из парфюмерии"}
 
 
@@ -58,7 +63,8 @@ def crud_update_brand(my_collection):
         if "slug" not in product["brand"]:
             name = product["brand"]
             if product["color"]:
-                color_code, color_name = product["color"].split("/") if "/" in product["color"] else (product["color"], "")
+                color_code, color_name = product["color"].split(
+                    "/") if "/" in product["color"] else (product["color"], "")
                 sku = product["sku"]
 
                 slug = slugify(f"{name} {color_code} {color_name} {sku}")
@@ -70,7 +76,6 @@ def crud_update_brand(my_collection):
         else:
             continue
     return {"message": "Бренды успешно обновлены"}
-
 
 
 def set_data_price(my_collection):
