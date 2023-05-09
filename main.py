@@ -44,8 +44,8 @@ async def find_all_data(
     title: Union[str, None] = None,
     size: Union[str, None] = None,
     brand: Union[str, None] = None,
-    min_price: Union[str, None] = None,
-    max_price: Union[str, None] = None
+    min_price: Union[int, None] = None,
+    max_price: Union[int, None] = None
 ):
     query = {"leftovers": {"$elemMatch": {"count": {"$gt": 0}}}}
 
