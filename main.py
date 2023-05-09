@@ -12,6 +12,7 @@ from crud import (
 )
 from database import my_collection
 
+
 app = FastAPI(contact=dict(
     name="Developer Telegram",
     url="https://t.me/Holucrap",
@@ -38,8 +39,46 @@ async def product_filter():
     return {"message": "All functions finished successfully"}
 
 
+@app.get("/data")
+async def find_all_data(
+    title: str = "",
+    size: Union[str, None] = None,
+    brand: Union[str, None] = None,
+    min_price: Union[str, None] = None,
+    max_price: Union[str, None] = None
+):
+    query = {"leftovers": {"$elemMatch": {"count": {"$gt": 0}}}}
+
+    if title:
+        query["title"] = title
+
+    if brand:
+        query["brand"] = brand
+
+    if size:
+        query["leftovers"]["$elemMatch"]["size"] = size
+
+    if min_price and max_price:
+        if min_price >= max_price:
+            raise HTTPException(
+                status_code=302, detail="Min price should be lower than or equal to max price")
+
+        query["leftovers"]["$elemMatch"]["price"] = {"$gte": min_price, "$lte": max_price}
+
+    projection = {"_id": 0}
+    print(query)
+    results = my_collection.find(query, projection).limit(100)
+
+    data = []
+    for result in results:
+        data.append(result)
+
+    return {"data": data}
+
+
+
 @app.get("/data_item")
-async def get_data(title: str,):
+async def get_data(title: str):
     query = {"title": title}
     projection = {"_id": 0}
 
@@ -88,7 +127,7 @@ async def get_brands(brand: Union[str, None] = None):
 
 
 @app.get("/data_size")
-async def get_data_size(size: str | None = None):
+async def get_data_size(size: Union[str, None] = None):
     query = {"leftovers": {"$elemMatch": {"count": {"$gt": 0}}}}
     if size is not None:
         query["leftovers"]["$elemMatch"]["size"] = size
