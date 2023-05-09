@@ -25,11 +25,6 @@ async def upload_data(data: UploadFile = File(...)):
     return {"status": "Data uploaded successfully!"}
 
 
-@app.put('/x')
-async def x():
-    return update_sku(my_collection)
-
-
 @app.put('/filter')
 async def product_filter():
     update_sku(my_collection)
