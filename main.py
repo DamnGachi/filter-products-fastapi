@@ -41,7 +41,7 @@ async def product_filter():
 
 @app.get("/data")
 async def find_all_data(
-    title: str = "",
+    title: Union[str, None] = None,
     size: Union[str, None] = None,
     brand: Union[str, None] = None,
     min_price: Union[str, None] = None,
