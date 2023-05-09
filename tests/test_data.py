@@ -59,3 +59,26 @@ def test_create_collection(mongo_client):
         db.create_collection(collection_name)
 
     assert collection_name in db.list_collection_names()
+
+
+def test_check_price(mongo_client):
+    # Set up database and query parameters
+    db = mongo_client.myDatabase
+    collection_name = "products"
+    query = {"leftovers": {"$elemMatch": {
+        "price": {"$gte": 99999, "$lte": 100000}}}
+    }
+    projection = {"_id": 0}
+
+    # Query the database and get the results
+    results = db[collection_name].find(query, projection).limit(100)
+    data = []
+    for result in results:
+        data.append(result)
+
+    # Check that the query returned the expected results
+    assert len(data) == 2
+    assert data[0]["title"] == "костюм"
+    assert data[0]["price"] == 100000
+    assert data[1]["title"] == "костюм"
+    assert data[1]["price"] == 100000

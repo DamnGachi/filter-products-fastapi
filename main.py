@@ -25,6 +25,11 @@ async def upload_data(data: UploadFile = File(...)):
     return {"status": "Data uploaded successfully!"}
 
 
+@app.put('/x')
+async def x():
+    return update_sku(my_collection)
+
+
 @app.put('/filter')
 async def product_filter():
     update_sku(my_collection)
@@ -86,14 +91,16 @@ async def get_brands(brand: Union[str, None] = None):
 
 
 @app.get("/data_size")
-async def get_data_size(size: Union[str, None] = None):
+async def get_data_size(size: str | None = None):
+    query = {"leftovers": {"$elemMatch": {"count": {"$gt": 0}}}}
     if size is not None:
-        query = {"leftovers": {"$elemMatch": {"size": size}}}
+        query["leftovers"]["$elemMatch"]["size"] = size
     else:
         query = {}
     projection = {"_id": 0}
-    results = my_collection.find(query, projection).sort("size", 1).limit(100)
+    results = my_collection.find(query, projection).limit(100)
     sizes = []
+    print(results)
     for result in results:
         sizes.append(result)
     return {"size": sizes}

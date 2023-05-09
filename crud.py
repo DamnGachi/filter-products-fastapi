@@ -17,16 +17,22 @@ def update_sku(my_collection):
                             "input": "$sku",
                             "regex": "\\d+"
                         }
+                    },
+                    "leftovers": {
+                        "$map": {
+                            "input": "$leftovers",
+                            "in": {
+                                "size": "$$this.size",
+                                "count": {"$sum": ["$$this.count", 1]},
+                                "price": "$$this.price"
+                            }
+                        }
                     }
-                },
-                "$set": {
-                    "leftovers": [{"size": "U", "count": {"$sum": "$leftovers.count"}, "price": "$price"}]
                 }
             }
 
         ]
     )
-
     return {"message": "Цены и артиклы на все товары успешно присвоены"}
 
 
@@ -84,6 +90,12 @@ def change_color_product(my_collection):
             my_collection.update_one(
                 {"_id": product["_id"]},
                 {"$set": {"color_name": color_name, "color_id": color_id},
+                 "$unset": {"color": True}}
+            )
+        else:
+            my_collection.update_one(
+                {"_id": product["_id"]},
+                {"$set": {"color_name": None, "color_id": None},
                  "$unset": {"color": True}}
             )
     return {"message": "Цвета успешно обновлены"}
