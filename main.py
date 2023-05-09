@@ -6,6 +6,7 @@ from crud import (
     remove_color_from_category,
     crud_update_brand,
     update_categories,
+    update_size_cloth,
     update_sku,
     set_data_price
 )
@@ -25,8 +26,19 @@ async def upload_data(data: UploadFile = File(...)):
     return {"status": "Data uploaded successfully!"}
 
 
+# @app.put('/x')
+# async def x():
+#     return 
+
+
+# @app.put('/s')
+# async def s():
+#     return update_sku(my_collection)
+
+
 @app.put('/filter')
 async def product_filter():
+    update_size_cloth(my_collection)
     update_sku(my_collection)
     change_color_product(my_collection)
     remove_color_from_category(my_collection)

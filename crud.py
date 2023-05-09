@@ -3,12 +3,29 @@ from slugify import slugify
 from pymongo import UpdateOne
 
 
+def update_size_cloth(my_collection):
+    my_collection.update_many(
+        {"category": {"$in": ["одежда", "обувь", "сумки"]}},
+        [{"$set": {
+            "leftovers": {
+                "$map": {
+                    "input": "$leftovers",
+                    "in": {
+                        "size": "$$this.size",
+                        "count": {"$sum": ["$$this.count", 1]},
+                        "price": "$$this.price"
+                    }
+                }
+            }
+        }
+        }])
+    return "success"
+
+
 def update_sku(my_collection):
 
     my_collection.update_many(
-        {"category": {"$in": ["одежда", "обувь", "сумки"]},
-         "category": {"$exists": True}
-         },
+        {"category": {"$in": ["одежда", "обувь", "сумки"]}},
         [
             {
                 "$set": {
@@ -17,22 +34,12 @@ def update_sku(my_collection):
                             "input": "$sku",
                             "regex": "\\d+"
                         }
-                    },
-                    "leftovers": {
-                        "$map": {
-                            "input": "$leftovers",
-                            "in": {
-                                "size": "$$this.size",
-                                "count": {"$sum": ["$$this.count", 1]},
-                                "price": "$$this.price"
-                            }
-                        }
                     }
                 }
-            }
-
+            },
         ]
     )
+
     return {"message": "Цены и артиклы на все товары успешно присвоены"}
 
 
