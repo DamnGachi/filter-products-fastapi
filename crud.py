@@ -35,12 +35,8 @@ def remove_color_from_category(my_collection):
         {"size_table_type": {
             "$in": ["парфюм", "парфюмерия", "Парфюм", "Парфюмерия"]},
             "size_table_type": {"$exists": True},
-
          },
-        {"un$set": {
-            "color": 1
-        }},
-
+        {"$unset": {"color": 1}}
     )
     my_collection.update_many({}, {"$unset": {"fashion_season": 1, "fashion_collection": 1,
                               "fashion_collection_inner": 1, "manufacture_country": 1, "size_table_type": 1, "category": 1}})
@@ -56,9 +52,9 @@ def crud_update_brand(my_collection):
     for product in products:
         if "slug" not in product["brand"]:
             name = product["brand"]
-            if product["color"]:
-                color_code, color_name = product["color"].split(
-                    "/") if "/" in product["color"] else (product["color"], "")
+            if product["color_name"] and product["color_id"]:
+                color_code = product["color_id"]
+                color_name = product["color_name"]
                 sku = product["sku"]
 
                 slug = slugify(f"{name} {color_code} {color_name} {sku}")
@@ -77,6 +73,7 @@ def change_color_product(my_collection):
         {"root_category": {"$nin": ["Парфюмерия с маркировкой", "Косметика", "Аксессуары", "Парфюмерия без маркировки"]},
          "color": {"$nin": ""},
          "color": {"$exists": True}}).limit(100)
+
     for product in colors:
         if product["color"] is None:
             continue
@@ -86,9 +83,9 @@ def change_color_product(my_collection):
             color_name = color[1]
             my_collection.update_one(
                 {"_id": product["_id"]},
-                {"$set": {"color_name": color_name, "color_id": color_id}}
+                {"$set": {"color_name": color_name, "color_id": color_id},
+                 "$unset": {"color": True}}
             )
-        print(product)
     return {"message": "Цвета успешно обновлены"}
 
 
