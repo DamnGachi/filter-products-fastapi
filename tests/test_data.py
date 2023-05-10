@@ -24,7 +24,7 @@ def mongo_client():
 def product_data():
     with open('data.json', encoding='utf-8') as f:
         data = json.load(f)
-    return data[10]
+    return data[101]
 
 
 def test_product_title(product_data):
