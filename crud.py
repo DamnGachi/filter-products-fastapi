@@ -87,7 +87,7 @@ def change_color_product(my_collection):
     colors = my_collection.find(
         {"root_category": {"$nin": ["Парфюмерия с маркировкой", "Косметика", "Аксессуары", "Парфюмерия без маркировки"]},
          "color": {"$nin": ""},
-         "color": {"$exists": True}}).limit(100)
+         "color": {"$exists": True}}).limit(3000)
 
     for product in colors:
         if product["color"] is None:
@@ -99,13 +99,13 @@ def change_color_product(my_collection):
             my_collection.update_one(
                 {"_id": product["_id"]},
                 {"$set": {"color_name": color_name, "color_id": color_id},
-                 "$unset": {"color": True}}
+                 "$unset": {"color": 1}}
             )
         else:
             my_collection.update_one(
                 {"_id": product["_id"]},
                 {"$set": {"color_name": None, "color_id": None},
-                 "$unset": {"color": True}}
+                 "$unset": {"color": 1}}
             )
     return {"message": "Цвета успешно обновлены"}
 

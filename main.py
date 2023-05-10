@@ -26,9 +26,9 @@ async def upload_data(data: UploadFile = File(...)):
 
 @app.put('/filter')
 async def product_filter():
+    change_color_product(my_collection)
     update_size_cloth(my_collection)
     update_sku(my_collection)
-    change_color_product(my_collection)
     remove_color_from_category(my_collection)
     update_categories(my_collection)
     crud_update_brand(my_collection)
