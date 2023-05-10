@@ -59,12 +59,13 @@ def remove_color_from_category(my_collection):
 def crud_update_brand(my_collection):
     products = my_collection.find({
         "brand": {"$exists": True},
-        "color": {"$exists": True},
-    }).limit(100)
+        "color_name": {"$exists": True},
+        "color_id": {"$exists": True}
+    }).limit(300)
 
     for product in products:
         if "slug" not in product["brand"]:
-            name = product["brand"]
+            name = product["title"]
             if product["color_name"] and product["color_id"]:
                 color_code = product["color_id"]
                 color_name = product["color_name"]
@@ -74,10 +75,11 @@ def crud_update_brand(my_collection):
 
                 my_collection.update_one(
                     {"_id": product["_id"]},
-                    {"$set": {"brand": {"name": name, "slug": slug, "color_name": color_name}}}
+                    {"$set": {"brand_slug": {"name": name, "slug": slug, "color_name": color_name}}}
                 )
         else:
             continue
+        print(product)
     return {"message": "Бренды успешно обновлены"}
 
 

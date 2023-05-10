@@ -13,10 +13,7 @@ from crud import (
 from database import my_collection
 
 
-app = FastAPI(contact=dict(
-    name="Developer Telegram",
-    url="https://t.me/Holucrap",
-    email="maijor18@mail.ru",))
+app = FastAPI()
 
 
 @app.post("/upload")
@@ -47,7 +44,8 @@ async def find_all_data(
     min_price: Union[int, None] = None,
     max_price: Union[int, None] = None
 ):
-    query = {"leftovers": {"$elemMatch": {"count": {"$gt": 0}}}}
+    query = {"leftovers": {"$elemMatch": {
+        "count": {"$gt": 0}, "count": {"$ne": 0}}}}
 
     if title:
         query["title"] = title
@@ -63,18 +61,20 @@ async def find_all_data(
             raise HTTPException(
                 status_code=302, detail="Min price should be lower than or equal to max price")
 
-        query["leftovers"]["$elemMatch"]["price"] = {"$gte": min_price, "$lte": max_price}
+        query["leftovers"]["$elemMatch"]["price"] = {
+            "$gte": min_price, "$lte": max_price}
 
     projection = {"_id": 0}
-    print(query)
-    results = my_collection.find(query, projection).limit(100)
+    results = my_collection.find(query, projection).limit(500)
 
     data = []
     for result in results:
+        filtered_leftovers = [
+            item for item in result["leftovers"] if item.get("count", 0) > 0]
+        result["leftovers"] = filtered_leftovers
         data.append(result)
 
     return {"data": data}
-
 
 
 @app.get("/data_item")
@@ -82,7 +82,7 @@ async def get_data(title: str):
     query = {"title": title}
     projection = {"_id": 0}
 
-    results = my_collection.find(query, projection).limit(100)
+    results = my_collection.find(query, projection).limit(500)
 
     data = []
     for result in results:
@@ -102,7 +102,7 @@ async def get_data_price(min_price: int, max_price: int):
     }
     projection = {"_id": 0}
 
-    results = my_collection.find(query, projection).limit(100)
+    results = my_collection.find(query, projection).limit(500)
 
     data = []
     for result in results:
@@ -117,7 +117,7 @@ async def get_brands(brand: Union[str, None] = None):
     else:
         query = {}
     projection = {"_id": 0}
-    results = my_collection.find(query, projection).sort("brand", 1).limit(100)
+    results = my_collection.find(query, projection).sort("brand", 1).limit(500)
     brands = []
     for result in results:
         if result["brand"] == "":
