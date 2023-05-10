@@ -75,8 +75,10 @@ def crud_update_brand(my_collection):
 
                 my_collection.update_one(
                     {"_id": product["_id"]},
-                    {"$set": {"brand_slug": {"name": name, "slug": slug, "color_name": color_name}}}
+                    {"$set": {"brand_slug": {"name": name,
+                                             "slug": slug, "color_name": color_name}}}
                 )
+            print(product)
         else:
             continue
     return {"message": "Бренды успешно обновлены"}

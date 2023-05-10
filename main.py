@@ -63,7 +63,7 @@ async def find_all_data(
 
         query["leftovers"]["$elemMatch"]["price"] = {
             "$gte": min_price, "$lte": max_price}
-
+        
     projection = {"_id": 0}
     results = my_collection.find(query, projection).limit(500)
 
@@ -72,7 +72,8 @@ async def find_all_data(
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
-        data.append(result)
+        if result["sku"] not in data:
+            data.append(result)
 
     return {"data": data}
 
