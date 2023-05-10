@@ -79,7 +79,6 @@ def crud_update_brand(my_collection):
                 )
         else:
             continue
-        print(product)
     return {"message": "Бренды успешно обновлены"}
 
 
