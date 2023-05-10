@@ -61,7 +61,7 @@ def crud_update_brand(my_collection):
         "brand": {"$exists": True},
         "color_name": {"$exists": True},
         "color_id": {"$exists": True}
-    }).limit(300)
+    }).limit(3000)
 
     for product in products:
         if "slug" not in product["brand"]:
@@ -78,7 +78,6 @@ def crud_update_brand(my_collection):
                     {"$set": {"brand_slug": {"name": name,
                                              "slug": slug, "color_name": color_name}}}
                 )
-            print(product)
         else:
             continue
     return {"message": "Бренды успешно обновлены"}
