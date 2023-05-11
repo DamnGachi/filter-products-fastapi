@@ -26,13 +26,13 @@ async def upload_data(data: UploadFile = File(...)):
 
 @app.put('/filter')
 async def product_filter():
+    set_data_price(my_collection)
     change_color_product(my_collection)
     update_size_cloth(my_collection)
     update_sku(my_collection)
     remove_color_from_category(my_collection)
     update_categories(my_collection)
     crud_update_brand(my_collection)
-    set_data_price(my_collection)
     return {"message": "All functions finished successfully"}
 
 
@@ -63,19 +63,22 @@ async def find_all_data(
 
         query["leftovers"]["$elemMatch"]["price"] = {
             "$gte": min_price, "$lte": max_price}
-        
+
     projection = {"_id": 0}
     results = my_collection.find(query, projection).limit(500)
-
+    print(query)
     data = []
+    unique = []
+
     for result in results:
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
-        if result["sku"] not in data:
+        if result["sku"] not in unique:
             data.append(result)
+            unique.append(result["sku"])
 
-    return {"data": data}
+    return data
 
 
 @app.get("/data_item")
@@ -89,7 +92,7 @@ async def get_data(title: str):
     for result in results:
         data.append(result)
 
-    return {"data": data}
+    return data
 
 
 @app.get("/data_price")
@@ -108,7 +111,7 @@ async def get_data_price(min_price: int, max_price: int):
     data = []
     for result in results:
         data.append(result)
-    return {"data": data}
+    return data
 
 
 @app.get("/data_brand")

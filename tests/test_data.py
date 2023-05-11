@@ -82,3 +82,28 @@ def test_check_price(mongo_client):
     assert data[0]["price"] == 100000
     assert data[1]["title"] == "костюм"
     assert data[1]["price"] == 100000
+
+
+def test_check_data(mongo_client):
+    # Set up database and query parameters
+    db = mongo_client.myDatabase
+    collection_name = "products"
+    projection = {"_id": 0}
+    query = {'leftovers': {'$elemMatch': {'count': {'$ne': 0}, 'size': '75D', 'price': {
+        '$gte': 8469, '$lte': 8471}}}, 'title': 'Боди женское', 'brand': 'DKNY'}
+    # Query the database and get the results
+    results = db[collection_name].find(query, projection)
+    data = []
+    unique = []
+    for result in results:
+        filtered_leftovers = [
+            item for item in result["leftovers"] if item.get("count", 0) > 0]
+        result["leftovers"] = filtered_leftovers
+        if result["sku"] not in unique:
+            data.append(result)
+            unique.append(result["sku"])
+    # Check that the query returned the expected results
+    assert data[0]["title"] == "Боди женское"
+    assert data[0]["price"] == 8470
+    assert data[0]["sku"] == "DK6008-B7P"
+    assert data[0]["brand"] == "DKNY"
