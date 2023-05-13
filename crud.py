@@ -23,24 +23,42 @@ def update_size_cloth(my_collection):
 
 
 def update_sku(my_collection):
-
     my_collection.update_many(
-        {"category": {"$in": ["одежда", "обувь", "сумки"]}},
+        {
+            "category": {"$in": ["одежда", "обувь", "сумки"]},
+            "sku": {"$regex": "\\d+(-[1-9rpRP]+)*$"}
+        },
         [
             {
                 "$set": {
                     "sku": {
                         "$regexFind": {
                             "input": "$sku",
-                            "regex": "\\d+"
+                            "regex": "^\\d+"
                         }
                     }
                 }
             },
+            {
+                "$set": {
+                    "sku": {
+                        "$concat": [
+                            "$sku",
+                            "-",
+                            {
+                                "$regexFind": {
+                                    "input": "$sku",
+                                    "regex": "(?<=-)\\w+"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
         ]
     )
 
-    return {"message": "Цены и артиклы на все товары успешно присвоены"}
+    return {"message": "Цены и артикулы на все товары успешно присвоены"}
 
 
 def remove_color_from_category(my_collection):
@@ -104,8 +122,7 @@ def change_color_product(my_collection):
         else:
             my_collection.update_one(
                 {"_id": product["_id"]},
-                {"$set": {"color_name": None, "color_id": None},
-                 "$unset": {"color": 1}}
+                {"$set": {"color_name": None, "color_id": None}}
             )
     return {"message": "Цвета успешно обновлены"}
 
