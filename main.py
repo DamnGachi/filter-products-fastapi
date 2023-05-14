@@ -24,6 +24,11 @@ async def upload_data(data: UploadFile = File(...)):
     return {"status": "Data uploaded successfully!"}
 
 
+@app.put('/xxx')
+async def xxx():
+    return update_sku(my_collection)
+
+
 @app.put('/filter')
 async def product_filter():
     set_data_price(my_collection)
@@ -66,17 +71,25 @@ async def find_all_data(
 
     projection = {"_id": 0}
     results = my_collection.find(query, projection).limit(500)
-    print(query)
-    data = []
-    unique = []
 
+    data = []
+    sku = []
+    color = []
+    danger = ["-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-R", "-P"]
     for result in results:
+        if result["sku"][-2:] in danger:
+            result["sku"] = result["sku"][:-2]
+        if result["color"] in color and result["sku"] in sku:
+            leftovers_sum = sum([sum([item["count"] for item in result["leftovers"]]) for result in data])
+            max_price = max([result["price"] for result in data])
+
+        else:
+            sku.append(result["sku"])
+            color.append(result["color"])
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
-        if result["sku"] not in unique:
-            data.append(result)
-            unique.append(result["sku"])
+        data.append(result)
 
     return data
 
