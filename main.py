@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Union
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from crud import (
@@ -54,7 +55,8 @@ async def find_all_data(
     if brand:
         query["brand"] = brand
     if sku:
-        query["sku"] = sku
+       regex_pattern = re.escape(sku) + "$"
+    query["sku"] = {"$regex": regex_pattern}
 
     if size:
         query["leftovers"]["$elemMatch"]["size"] = size
@@ -77,13 +79,13 @@ async def find_all_data(
     for result in results:
         if result["sku"][-2:] in danger:
             result["sku"] = result["sku"][:-2]
-        if result["color"] in color and result["sku"] in sku:
+        if result["color_id"] in color and result["sku"] in sku:
             leftovers_sum = sum([sum([item["count"] for item in result["leftovers"]]) for result in data])
             max_price = max([result["price"] for result in data])
 
         else:
             sku.append(result["sku"])
-            color.append(result["color"])
+            color.append(result["color_id"])
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
