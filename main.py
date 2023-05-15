@@ -54,11 +54,13 @@ async def find_all_data(
     if title:
         query["title"] = title
 
+    if sku:
+        query["sku"] = sku
+        # regex_pattern = re.escape(sku) + "$"
+        # query["sku"] = {"$regex": regex_pattern}
+        
     if brand:
         query["brand"] = brand
-    if sku:
-        regex_pattern = re.escape(sku) + "$"
-        query["sku"] = {"$regex": regex_pattern}
 
     if size:
         query["leftovers"]["$elemMatch"]["size"] = size
@@ -77,13 +79,15 @@ async def find_all_data(
     data = []
     sku = []
     color = []
-    danger = ["-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-R", "-P","-R-R"]
+    danger = ["-1", "-2", "-3", "-4", "-5", "-6",
+              "-7", "-8", "-9", "-R", "-P", "-R-R"]
     for result in results:
         if result["sku"][-2:] in danger:
             result["sku"] = result["sku"][:-2]
         try:
             if result["color_id"] in color and result["sku"] in sku:
-                leftovers_sum = sum([sum([item["count"] for item in result["leftovers"]]) for result in data])
+                leftovers_sum = sum(
+                    [sum([item["count"] for item in result["leftovers"]]) for result in data])
                 max_price = max([result["price"] for result in data])
 
             else:
