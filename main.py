@@ -32,7 +32,9 @@ async def product_filter():
     update_size_cloth(my_collection)
     update_sku(my_collection)
     remove_color_from_category(my_collection)
+    print(1)
     update_categories(my_collection)
+    print(2)
     crud_update_brand(my_collection)
     return {"message": "All functions finished successfully"}
 
@@ -79,13 +81,16 @@ async def find_all_data(
     for result in results:
         if result["sku"][-2:] in danger:
             result["sku"] = result["sku"][:-2]
-        if result["color_id"] in color and result["sku"] in sku:
-            leftovers_sum = sum([sum([item["count"] for item in result["leftovers"]]) for result in data])
-            max_price = max([result["price"] for result in data])
+        try:
+            if result["color_id"] in color and result["sku"] in sku:
+                leftovers_sum = sum([sum([item["count"] for item in result["leftovers"]]) for result in data])
+                max_price = max([result["price"] for result in data])
 
-        else:
-            sku.append(result["sku"])
-            color.append(result["color_id"])
+            else:
+                sku.append(result["sku"])
+                color.append(result["color_id"])
+        except KeyError:
+            continue
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
