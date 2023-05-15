@@ -64,7 +64,7 @@ def crud_update_brand(my_collection):
         "brand": {"$exists": True},
         "color_name": {"$exists": True},
         "color_id": {"$exists": True}
-    }).limit(3000)
+    }).limit(1000)
 
     for product in products:
         if "slug" not in product["brand"]:
@@ -90,7 +90,7 @@ def change_color_product(my_collection):
     colors = my_collection.find(
         {"root_category": {"$nin": ["Парфюмерия с маркировкой", "Косметика", "Аксессуары", "Парфюмерия без маркировки"]},
          "color": {"$nin": ""},
-         "color": {"$exists": True}}).limit(3000)
+         "color": {"$exists": True}}).limit(1000)
 
     for product in colors:
         if product["color"] is None:
@@ -114,7 +114,7 @@ def change_color_product(my_collection):
 
 def set_data_price(my_collection):
 
-    items = my_collection.find().limit(100)
+    items = my_collection.find().limit(1000)
 
     for item in items:
         if item.get("discount_price", 0) > 0:
