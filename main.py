@@ -55,8 +55,8 @@ async def find_all_data(
     if brand:
         query["brand"] = brand
     if sku:
-       regex_pattern = re.escape(sku) + "$"
-    query["sku"] = {"$regex": regex_pattern}
+        regex_pattern = re.escape(sku) + "$"
+        query["sku"] = {"$regex": regex_pattern}
 
     if size:
         query["leftovers"]["$elemMatch"]["size"] = size
