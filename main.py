@@ -70,7 +70,7 @@ async def find_all_data(
     data = []
     sku = []
     color = []
-    danger = ["-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-R", "-P"]
+    danger = ["-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-R", "-P","-R-R"]
     for result in results:
         if result["sku"][-2:] in danger:
             result["sku"] = result["sku"][:-2]
