@@ -31,13 +31,12 @@ def update_sku(my_collection):
             {
                 "$set": {
                     "sku": {
-                        "$replaceAll": {
+                        "$regexFind": {
                             "input": "$sku",
-                            "find": "(-[1-9rRp]+$)|(-r-r$)",
-                            "replacement": ""
+                            "regex": "\\d+"
                         }
                     }
-                }
+                },
             }
         ]
     )
@@ -45,12 +44,10 @@ def update_sku(my_collection):
     return {"message": "Цены и артикулы на все товары успешно присвоены"}
 
 
-
 def remove_color_from_category(my_collection):
     my_collection.update_many(
         {"size_table_type": {
             "$in": ["парфюм", "парфюмерия", "Парфюм", "Парфюмерия"]},
-            "size_table_type": {"$exists": True},
          },
         {"$unset": {"color": 1}}
     )
@@ -64,7 +61,7 @@ def crud_update_brand(my_collection):
         "brand": {"$exists": True},
         "color_name": {"$exists": True},
         "color_id": {"$exists": True}
-    }).limit(500)
+    }).limit(250)
 
     for product in products:
         if "slug" not in product["brand"]:
@@ -90,7 +87,7 @@ def change_color_product(my_collection):
     colors = my_collection.find(
         {"root_category": {"$nin": ["Парфюмерия с маркировкой", "Косметика", "Аксессуары", "Парфюмерия без маркировки"]},
          "color": {"$nin": ""},
-         "color": {"$exists": True}}).limit(500)
+         "color": {"$exists": True}}).limit(250)
 
     for product in colors:
         if product["color"] is None:
@@ -114,7 +111,7 @@ def change_color_product(my_collection):
 
 def set_data_price(my_collection):
 
-    items = my_collection.find().limit(500)
+    items = my_collection.find().limit(250)
 
     for item in items:
         if item.get("discount_price", 0) > 0:

@@ -28,13 +28,17 @@ async def upload_data(data: UploadFile = File(...)):
 @app.put('/filter')
 async def product_filter():
     set_data_price(my_collection)
-    change_color_product(my_collection)
-    update_size_cloth(my_collection)
-    update_sku(my_collection)
-    remove_color_from_category(my_collection)
     print(1)
-    update_categories(my_collection)
+    change_color_product(my_collection)
     print(2)
+    update_size_cloth(my_collection)
+    print(3)
+    update_sku(my_collection)
+    print(4)
+    remove_color_from_category(my_collection)
+    print(5)
+    update_categories(my_collection)
+    print(6)
     crud_update_brand(my_collection)
     return {"message": "All functions finished successfully"}
 
@@ -55,10 +59,9 @@ async def find_all_data(
         query["title"] = title
 
     if sku:
-        query["sku"] = sku
-        # regex_pattern = re.escape(sku) + "$"
-        # query["sku"] = {"$regex": regex_pattern}
-        
+        regex_pattern = re.escape(sku) + ".*$"
+        query["sku"] = {"$regex": regex_pattern}
+
     if brand:
         query["brand"] = brand
 
@@ -82,22 +85,26 @@ async def find_all_data(
     danger = ["-1", "-2", "-3", "-4", "-5", "-6",
               "-7", "-8", "-9", "-R", "-P", "-R-R"]
     for result in results:
-        if result["sku"][-2:] in danger:
-            result["sku"] = result["sku"][:-2]
-        try:
-            if result["color_id"] in color and result["sku"] in sku:
-                leftovers_sum = sum(
-                    [sum([item["count"] for item in result["leftovers"]]) for result in data])
-                max_price = max([result["price"] for result in data])
-
-            else:
-                sku.append(result["sku"])
-                color.append(result["color_id"])
-        except KeyError:
-            continue
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
+        if result["sku"][-2:] in danger:
+            result["sku"] = result["sku"][:-2]
+        # try:
+        #     if result["color_id"] in color and result["sku"] in sku:
+        #         leftovers_sum = sum(
+        #             [sum([item["count"] for item in result["leftovers"]]) for result in data])
+        #         max_price = max([result["price"] for result in data])
+
+        #     else:
+        #         sku.append(result["sku"])
+        #         color.append(result["color_id"])
+        # except KeyError:
+        #     # if "/" in result["color"]:
+        #     #     pass
+        #     continue
+
+
         data.append(result)
 
     return data
