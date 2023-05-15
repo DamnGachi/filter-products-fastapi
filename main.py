@@ -41,6 +41,7 @@ async def find_all_data(
     title: Union[str, None] = None,
     size: Union[str, None] = None,
     brand: Union[str, None] = None,
+    sku: Union[str, None] = None,
     min_price: Union[int, None] = None,
     max_price: Union[int, None] = None
 ):
@@ -52,6 +53,8 @@ async def find_all_data(
 
     if brand:
         query["brand"] = brand
+    if sku:
+        query["sku"] = sku
 
     if size:
         query["leftovers"]["$elemMatch"]["size"] = size
