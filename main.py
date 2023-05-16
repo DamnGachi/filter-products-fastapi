@@ -38,7 +38,7 @@ async def product_filter():
     remove_color_from_category(my_collection)
 
     update_categories(my_collection)
-    
+
     crud_update_brand(my_collection)
     return {"message": "All functions finished successfully"}
 
@@ -80,12 +80,12 @@ async def find_all_data(
     results = my_collection.find(query, projection).limit(500)
 
     data = []
-    sku = []
+    data_dict = {}
+    sku_set = set()
     color = []
     danger = ["-1", "-2", "-3", "-4", "-5", "-6",
               "-7", "-8", "-9", "-R", "-P", "-R-R"]
     for result in results:
-        print(result)
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
@@ -94,21 +94,43 @@ async def find_all_data(
         elif result["sku"][-2:] in danger:
             result["sku"] = result["sku"][:-2]
         try:
-            col=result["color"].split("/")[0]
-            if col in color and result["sku"] in sku:
-                leftovers_sum = sum(
-                    [sum([item["count"] for item in result["leftovers"]]) for result in data])
-                max_price = max([result["price"] for result in data])
-
+            col = result["color"].split("/")[0]
+            unique_key = (result["sku"], col)
+            if unique_key in data_dict:
+                # Если комбинация sku и color уже существует в словаре, суммируем значения count
+                existing_leftovers = data_dict[unique_key]
+                for item in result["leftovers"]:
+                    size = item["size"]
+                    count = item["count"]
+                    price = item["price"]
+                    existing_item = next(
+                        (x for x in existing_leftovers if x["size"] == size and x["price"] == price), None)
+                    if existing_item:
+                        existing_item["count"] += count
+                    else:
+                        existing_leftovers.append(item)
             else:
-                sku.append(result["sku"])
+                # Если комбинация sku и color еще не существует в словаре, добавляем ее
+                data_dict[unique_key] = result["leftovers"]
+                sku_set.add(result["sku"])
                 color.append(col)
+
+                print(result)
+                result["leftovers"] = result["leftovers"]
+                data.append(result)
         except KeyError:
             continue
 
-        if result not in data:
-            data.append(result)
 
+    # for (sku, col), leftovers in data_dict.items():
+    #     print(leftovers,sku,col)
+    #     result = next(
+    #         (x for x in results if x["sku"] == sku and x["color"].startswith(col)), None)
+    #     # if result not in data:
+    #     #     data.append(result)
+    #     if result:
+    #         result["leftovers"] = leftovers
+    #         data.append(result)
     return data
 
 
