@@ -83,9 +83,13 @@ async def find_all_data(
     data_dict = {}
     sku_set = set()
     color = []
+    uniq=[]
     danger = ["-1", "-2", "-3", "-4", "-5", "-6",
               "-7", "-8", "-9", "-R", "-P", "-R-R"]
-    for result in results:
+    for x in results:
+        if x not in uniq:
+            uniq.append(x)
+    for result in uniq:
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
@@ -181,6 +185,7 @@ async def get_data_size(size: Union[str, None] = None):
     projection = {"_id": 0}
     results = my_collection.find(query, projection).limit(100)
     sizes = []
+
     for result in results:
         sizes.append(result)
     return {"size": sizes}
