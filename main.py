@@ -120,17 +120,6 @@ async def find_all_data(
                 data.append(result)
         except KeyError:
             continue
-
-
-    # for (sku, col), leftovers in data_dict.items():
-    #     print(leftovers,sku,col)
-    #     result = next(
-    #         (x for x in results if x["sku"] == sku and x["color"].startswith(col)), None)
-    #     # if result not in data:
-    #     #     data.append(result)
-    #     if result:
-    #         result["leftovers"] = leftovers
-    #         data.append(result)
     return data
 
 
