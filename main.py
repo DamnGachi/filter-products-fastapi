@@ -89,8 +89,10 @@ async def find_all_data(
         filtered_leftovers = [
             item for item in result["leftovers"] if item.get("count", 0) > 0]
         result["leftovers"] = filtered_leftovers
-        # if result["sku"][-2:] in danger:
-        #     result["sku"] = result["sku"][:-2]
+        if result["sku"][-4:] in danger:
+            result["sku"] = result["sku"][:-4]
+        elif result["sku"][-2:] in danger:
+            result["sku"] = result["sku"][:-2]
         try:
             col=result["color"].split("/")[0]
             if col in color and result["sku"] in sku:
