@@ -115,7 +115,6 @@ async def find_all_data(
                 sku_set.add(result["sku"])
                 color.append(col)
 
-                print(result)
                 result["leftovers"] = result["leftovers"]
                 data.append(result)
         except KeyError:
@@ -182,7 +181,6 @@ async def get_data_size(size: Union[str, None] = None):
     projection = {"_id": 0}
     results = my_collection.find(query, projection).limit(100)
     sizes = []
-    print(results)
     for result in results:
         sizes.append(result)
     return {"size": sizes}
